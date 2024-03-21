@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.11",
     "@clerk/nextjs": "^4.29.9",
+    "@google-cloud/translate": "^8.1.0",
     "next": "14.1.1",
     "openai": "^4.28.4",
     "react": "^18",

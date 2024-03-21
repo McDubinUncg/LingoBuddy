@@ -1,22 +1,95 @@
-const HomePage = () => {
-  return (
-  <div className="bg-blue-400">
-    <div className="bg-cover bg-center w-screen h-1/2 flex items-center justify-center relative">
-  <img src="/travelbanner.jpg" alt="Banner" className="h-1/2 w-full object-cover opacity-95" />
-      <div className="absolute top-1/3 transform -translate-y-1/2 text-center">
-        <h1 className="text-4xl font-bold text-black" style={{ fontFamily: 'Comic Sans MS, Comic Sans, cursive' }}>Your Best Friend For Spanish Learning!</h1>
-      </div>
-      <div className="absolute top-1/2 transform -translate-y-1/2 text-center">
-        <div className="relative">
-          <input type="text" placeholder="Translate Spanish or English" className="px-80 py-4 pl-10 border border-gray-300 rounded-full focus:outline-none w-full lg:w-auto text-left" />
-          <button className="absolute inset-y-0 right-0 bg-blue-500 text-white px-4 py-2 rounded-full rounded-l-none hover:bg-blue-600 focus:outline-none">Translate</button>
-        </div>
-      </div>
-      <div>
-    </div>
-        </div>
+"use client";
+import React, { useState } from 'react';
 
-  <div>
+async function translateText(text) {
+  const apiKey = 'AIzaSyCZgV-IMUEKvX8rcoufPPCX4YG1y50Zf88';
+
+  const detectResponse = await fetch(`https://translation.googleapis.com/language/translate/v2/detect?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          q: text,
+      }),
+  });
+
+  if (!detectResponse.ok) {
+      throw new Error('Error detecting language');
+  }
+
+  const detectData = await detectResponse.json();
+  const detectedLanguage = detectData.data.detections[0][0].language;
+
+  const targetLanguage = detectedLanguage === 'en' ? 'es' : 'en';
+
+  const translateResponse = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          q: text,
+          target: targetLanguage,
+      }),
+  });
+
+  if (!translateResponse.ok) {
+      throw new Error('Error translating text');
+  }
+
+  const translateData = await translateResponse.json();
+  return translateData.data.translations[0].translatedText;
+}
+
+function HomePage() {
+    const [inputText, setInputText] = useState('');
+    const [translatedText, setTranslatedText] = useState('');
+
+    const handleTranslate = async () => {
+        try {
+            const translation = await translateText(inputText, 'en'); // Change 'en' to the target language code
+            setTranslatedText(translation);
+        } catch (error) {
+            console.error('Error translating text:', error);
+            setTranslatedText('Translation failed');
+        }
+    };
+
+    return (
+        <div>
+          <div>
+            <div className="bg-blue-400">
+                <div className="bg-cover bg-center w-screen h-1/2 flex items-center justify-center relative">
+                    <img src="/travelbanner.jpg" alt="Banner" className="h-1/2 w-full object-cover opacity-95" />
+                    <div className="absolute top-1/3 transform -translate-y-1/2 text-center">
+                        <h1 className="text-4xl font-bold text-black" style={{ fontFamily: 'Comic Sans MS, Comic Sans, cursive' }}>Your Best Friend For Spanish Learning!</h1>
+                    </div>
+                    <div className="absolute top-1/2 transform -translate-y-1/2 text-center">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Translate Spanish or English"
+                                className="px-80 py-4 pl-10 border border-gray-300 rounded-full focus:outline-none w-full lg:w-auto text-left"
+                                value={inputText}
+                                onChange={(e) => setInputText(e.target.value)}
+                            />
+                            <button
+                                className="absolute inset-y-0 right-0 bg-blue-500 text-white px-4 py-2 rounded-full rounded-l-none hover:bg-blue-600 focus:outline-none"
+                                onClick={handleTranslate}
+                            >
+                                Translate
+                            </button>
+                        </div>
+                        {translatedText && (
+                          <div className="bg-gray-100 rounded-full p-4 mt-4">
+                          <h2 className="text-xl font-semibold mb-2">Translation:</h2>
+                          <p style={{ fontSize: '20px' }}>{translatedText}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
   <div className="flex justify-left">
   <div className="p-2 mr-4 w-1/2 border-8 border-orange-300 p-8 rounded-lg">
     <img src="Teacher.jpg" alt="Left Image1" className="w-full h-full object-cover flex items-center justify-center" />
@@ -30,8 +103,7 @@ const HomePage = () => {
       <p className="text-2xl font-bold text-black text-left">Join us on this educational adventure and unlock the full potential of your language skills! </p>
     </div>
   </div>
-  </div>
-
+  
   <div className="flex justify-right">
   <div className="p-2 mr-4 w-1/2 border-8 border-green-400 p-8 rounded-lg space-y-8">
       <h2 className="text-4xl font-bold text-black text-center" style={{ fontFamily: 'Comic Sans MS, Comic Sans, cursive' }}>Mini-Games</h2>
@@ -66,9 +138,10 @@ const HomePage = () => {
       <p className="text-2xl font-bold text-black text-left">The AI companion is programmed to adapt to your speaking experience, ensuring that the conversation remains within your skill level. It will gauge your proficiency and respond with equal or slightly less complexity to match your comfort level. As the conversation progresses, the AI will gradually adjust the complexity, providing an optimal learning experience tailored to your needs.</p>
     </div>
   </div>
-
 </div>
-  )
+</div>
+</div>
+    );
 };
 
 export default HomePage;
