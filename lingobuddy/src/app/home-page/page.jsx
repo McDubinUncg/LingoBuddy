@@ -48,7 +48,7 @@ function HomePage() {
 
     const handleTranslate = async () => {
         try {
-            const translation = await translateText(inputText, 'en'); // Change 'en' to the target language code
+            const translation = await translateText(inputText, 'en'); 
             setTranslatedText(translation);
         } catch (error) {
             console.error('Error translating text:', error);
