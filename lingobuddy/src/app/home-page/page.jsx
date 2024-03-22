@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 async function translateText(text) {
-  const apiKey = 'AIzaSyCZgV-IMUEKvX8rcoufPPCX4YG1y50Zf88';
+  const apiKey = 
 
   const detectResponse = await fetch(`https://translation.googleapis.com/language/translate/v2/detect?key=${apiKey}`, {
       method: 'POST',
